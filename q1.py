@@ -1,24 +1,43 @@
 import csv
 
-import math
-import sklearn
-from sklearn import tree
+import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix
+
 
 flare_list = []
-with open('flare.csv','r') as flare_file:
-    flare_reader = csv.reader(flare_file,delimiter=',', quotechar='|')
+with open('flare.csv', 'r') as flare_file:
+    flare_reader = csv.reader(flare_file, delimiter=',', quotechar='|')
     for row in flare_reader:
         flare_list.append(row)
 
 features = flare_list[0]
+features.pop()
+
 flare_list.remove(flare_list[0])
 
-size =len(flare_list)
-folds = [flare_list[x:x + math.ceil(size/4)] for x in range(0, len(flare_list), math.ceil(size/4))]
+X = flare_list
+y= []
+for line in X:
+    y.append(line.pop())
 
-#X=[folds[0],features]
-#Y=folds[1]
-#clf = tree.DecisionTreeClassifier()
-#clf = clf.fit(X, Y)
+X_arr = np.array(X)
+y_arr = np.array(y)
 
-#clf.predict(folds[2])
+skf = StratifiedKFold(4)
+#id3
+clf = DecisionTreeClassifier(criterion="entropy")
+avg = 0
+conf = np.matrix('0,0;0,0')
+
+for train, test in skf.split(X_arr, y_arr):
+    clf = clf.fit(X_arr[train],y_arr[train])
+    y_pred = clf.predict(X_arr[test])
+    avg += accuracy_score(y_arr[test],y_pred)
+    conf += confusion_matrix(y_arr[test], y_pred)
+
+
+print((avg/4))
+print((conf / 4))
