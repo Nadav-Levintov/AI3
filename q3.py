@@ -41,11 +41,11 @@ range_three_quarters_of_arr = range(math.ceil(3 * len(flare_list) / 4))
 range_last_quarter = range(math.ceil(3 * len(flare_list) / 4), len(flare_list))
 clf = clf.fit(X_arr[range_three_quarters_of_arr], y_arr[range_three_quarters_of_arr])
 #print("test")
-y_pred = clf.predict(X_arr[range_last_quarter])
-print(accuracy_score(y_arr[range_last_quarter], y_pred))
+#y_pred = clf.predict(X_arr[range_last_quarter])
+#print(accuracy_score(y_arr[range_last_quarter], y_pred))
 #print("train")
-#y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
-#print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
+y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
+print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
 ##########################################################
 #Now we will do under fit by only learning on 1 feature
 weak_feature_list = []
@@ -67,9 +67,9 @@ clf = clf.fit(X_arr[range_three_quarters_of_arr], y_arr[range_three_quarters_of_
 y_pred = clf.predict(X_arr[range_last_quarter])
 
 #print("test")
-y_pred = clf.predict(X_arr[range_last_quarter])
-print(accuracy_score(y_arr[range_last_quarter], y_pred))
+#y_pred = clf.predict(X_arr[range_last_quarter])
+#print(accuracy_score(y_arr[range_last_quarter], y_pred))
 #print("train")
-#y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
-#print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
+y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
+print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
 
