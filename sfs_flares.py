@@ -34,7 +34,7 @@ for i in range(len(validation_grp)):
 count = 0
 for i in range(len(data_wo_header)):
     if learning_full[i] != data_wo_header[i]:
-        print("missmatch")
+        print("mismatch")
         count+=1
 if(count>0):
     print("mismatches " , count , " out of " , len(data_wo_header))
@@ -50,7 +50,7 @@ hit_count = 0;
 for i in range(len(classify_vec)):
     if classify_vec[i] == validation_labels[i]:
         hit_count+=1
-print("precision of KNN without chosing features: " + str(hit_count/len(validation_labels)))
+print("precision of KNN without choosing features: " + str(hit_count/len(validation_labels)))
 
 knn_classifier_for_sfs = KNeighborsClassifier(n_neighbors = 5)
 b = sfs(learning_grp,learning_labels,8,knn_classifier_for_sfs,score)
