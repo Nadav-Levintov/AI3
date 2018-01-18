@@ -3,6 +3,7 @@ import csv
 import math
 
 import numpy as np
+from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
@@ -19,40 +20,40 @@ features.pop()
 
 
 flare_list.remove(flare_list[0])
-sorted_flare_list = copy.deepcopy(flare_list)
 
-for i in range(len(flare_list[0]) - 2, -1 , -1):
-    sorted_flare_list = sorted (sorted_flare_list, key=lambda x:x[i])
-
-X = sorted_flare_list
+X = copy.deepcopy(flare_list)
 y= []
 for line in X:
     y.append(line.pop())
 
 X_arr = np.array(X)
-
 y_arr = np.array(y)
 
 
-#id3
-clf = DecisionTreeClassifier(criterion="entropy")
 
-range_three_quarters_of_arr = range(math.ceil(3 * len(flare_list) / 4))
-range_last_quarter = range(math.ceil(3 * len(flare_list) / 4), len(flare_list))
-clf = clf.fit(X_arr[range_three_quarters_of_arr], y_arr[range_three_quarters_of_arr])
-#print("test")
-#y_pred = clf.predict(X_arr[range_last_quarter])
-#print(accuracy_score(y_arr[range_last_quarter], y_pred))
-#print("train")
-y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
-print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
+clf = DecisionTreeClassifier(criterion="entropy")
+skf = StratifiedKFold(4)
+train_accuracy =0
+test_accuracy =0
+for train, test in skf.split(X_arr, y_arr):
+    clf = clf.fit(X_arr[train],y_arr[train])
+    y_pred_train = clf.predict(X_arr[train])
+    y_pred_test = clf.predict(X_arr[test])
+    train_accuracy += accuracy_score(y_arr[train], y_pred_train)
+    test_accuracy += accuracy_score(y_arr[test], y_pred_test)
+
+train_accuracy /= 4
+test_accuracy /= 4
+
+
+
+#train
+print(train_accuracy)
+#test
+#print(test_accuracy)
 ##########################################################
 #Now we will do under fit by only learning on 1 feature
-weak_feature_list = []
-for f in flare_list:
-    weak_feature_list.append([f[0],f[len(f)-1]])
-
-X = weak_feature_list
+X = copy.deepcopy(flare_list)
 y= []
 for line in X:
     y.append(line.pop())
@@ -60,16 +61,23 @@ for line in X:
 X_arr = np.array(X)
 y_arr = np.array(y)
 
-#id3
-clf = DecisionTreeClassifier(criterion="entropy")
+clf = DecisionTreeClassifier(criterion="entropy", max_features=1, max_depth=1)
 
-clf = clf.fit(X_arr[range_three_quarters_of_arr], y_arr[range_three_quarters_of_arr])
-y_pred = clf.predict(X_arr[range_last_quarter])
+skf = StratifiedKFold(4)
+train_accuracy =0
+test_accuracy =0
+for train, test in skf.split(X_arr, y_arr):
+    clf = clf.fit(X_arr[train],y_arr[train])
+    y_pred_train = clf.predict(X_arr[train])
+    y_pred_test = clf.predict(X_arr[test])
+    train_accuracy += accuracy_score(y_arr[train], y_pred_train)
+    test_accuracy += accuracy_score(y_arr[test], y_pred_test)
 
-#print("test")
-#y_pred = clf.predict(X_arr[range_last_quarter])
-#print(accuracy_score(y_arr[range_last_quarter], y_pred))
-#print("train")
-y_pred = clf.predict(X_arr[range_three_quarters_of_arr])
-print(accuracy_score(y_arr[range_three_quarters_of_arr], y_pred))
+train_accuracy /= 4
+test_accuracy /= 4
+
+#train
+print(train_accuracy)
+#test
+#print(test_accuracy)
 
