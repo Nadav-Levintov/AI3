@@ -1,10 +1,9 @@
+import copy
 import csv
 
-import numpy as np
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import StratifiedKFold
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix
+from sfs import split2LearningAndValidation
 
 flare_list = []
 with open('flare.csv', 'r') as flare_file:
@@ -17,35 +16,28 @@ features.pop()
 
 flare_list.remove(flare_list[0])
 
-X = flare_list
-y= []
-for line in X:
-    y.append(line.pop())
+labels= []
+for line in flare_list:
+    labels.append(line.pop())
 
-X_arr = np.array(X)
-y_arr = np.array(y)
+X , y , X_test , y_test = split2LearningAndValidation(copy.deepcopy(flare_list),copy.deepcopy(labels),0.75)
 
-skf = StratifiedKFold(4)
 #No pruning
 clf = DecisionTreeClassifier(criterion="entropy")
-avg = 0
-
-for train, test in skf.split(X_arr, y_arr):
-    clf = clf.fit(X_arr[train],y_arr[train])
-    y_pred = clf.predict(X_arr[test])
-    avg += accuracy_score(y_arr[test],y_pred)
+clf = clf.fit(X,y)
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
 
 
-print((avg/4))
+print(accuracy)
 
 #pre pruning
+
+X , y , X_test , y_test = split2LearningAndValidation(copy.deepcopy(flare_list),copy.deepcopy(labels),0.75)
+
 clf = DecisionTreeClassifier(criterion="entropy", min_samples_leaf=20)
-avg = 0
+clf = clf.fit(X,y)
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
 
-for train, test in skf.split(X_arr, y_arr):
-    clf = clf.fit(X_arr[train],y_arr[train])
-    y_pred = clf.predict(X_arr[test])
-    avg += accuracy_score(y_arr[test],y_pred)
-
-
-print((avg/4))
+print(accuracy)
