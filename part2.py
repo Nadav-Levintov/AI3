@@ -1,9 +1,14 @@
 from sfs import sfs
 from sklearn.neighbors import KNeighborsClassifier
-import csv
+
 from utils import split2LearningAndValidation, score
+
 import copy
-import sys
+import csv
+
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+from sfs import split2LearningAndValidation
 
 
 
@@ -36,13 +41,14 @@ for i in range(len(validation_grp)):
 knn_classifier = KNeighborsClassifier(n_neighbors = 5)
 knn_classifier.fit(learning_grp,learning_labels)
 classify_vec = knn_classifier.predict(validation_grp)
-
-hit_count = 0;
-for i in range(len(classify_vec)):
-    if classify_vec[i] == validation_labels[i]:
-        hit_count+=1
+pred_vec = knn_classifier.predict(validation_grp)
+accuracy = accuracy_score(validation_labels, pred_vec)
 #"precision of KNN without choosing features: " +
-print(str(hit_count/len(validation_labels)))
+print(accuracy)
+
+
+
+
 
 knn_classifier_for_sfs = KNeighborsClassifier(n_neighbors = 5)
 b = sfs(learning_grp,learning_labels,8,knn_classifier_for_sfs,score)
@@ -50,20 +56,13 @@ b = sfs(learning_grp,learning_labels,8,knn_classifier_for_sfs,score)
 
 knn_classifier_for_sfs_p = copy.copy(knn_classifier_for_sfs)
 knn_classifier_for_sfs_p.fit([[obj[feature] for feature in b] for obj in learning_grp ],learning_labels)
-validation_vec = knn_classifier_for_sfs_p.predict([[obj[feature] for feature in b] for obj in validation_grp ])
-hit_count = 0
-for i in range(len(validation_labels)):
-    if validation_labels[i] == validation_vec[i]:
-        hit_count+=1
-#"knn = 5 , b = 8 precision is " +
-print( str(hit_count/len(validation_grp)))
 
-import copy
-import csv
 
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
-from sfs import split2LearningAndValidation
+
+pred_vec = knn_classifier_for_sfs_p.predict([[obj[feature] for feature in b] for obj in validation_grp ])
+accuracy = accuracy_score(validation_labels, pred_vec)
+print(accuracy)
+
 
 flare_list = []
 with open('flare.csv', 'r') as flare_file:

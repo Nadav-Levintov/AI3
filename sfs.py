@@ -23,8 +23,10 @@ def sfs(x, y, k, clf, score):
     featureSubSet = []
     init_score = 0
 
+    curr_best_feature = -1;
     while(len(featureSubSet) < k):
         best_score = init_score
+
         for f in range(num_features):
 
             learning_grp , learning_labels , validation_grp , validation_labels = split2LearningAndValidation(x,y,1)
@@ -36,11 +38,16 @@ def sfs(x, y, k, clf, score):
             #with the new feature : learn and get score
             temp_clf = copy.copy(clf)
             curr_score =  score(temp_clf, [[obj[feature] for feature in temp_featureSubSet] for obj in learning_grp ] ,learning_labels)
+           # print(temp_featureSubSet , curr_score , curr_best_feature)
             if(curr_score > best_score):
                 #TODO : what happens where each additional feature to the subset is making the score worst before reacking K ??
                 #TODO : probably dont need to split x into learning and validation. score function is. for now ratio = 1.
                 best_score = curr_score
-                featureSubSet = list(temp_featureSubSet) #copy
+                curr_best_feature = f
+           # print(best_score , f)
+        featureSubSet.append(curr_best_feature)
+
+
     return featureSubSet
 
 
